@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(cmd /c \"dir /a /s D:\\\\mercura_website_good\\\\trafficlight-site\\\\public\")"
+    ]
+  }
+}
