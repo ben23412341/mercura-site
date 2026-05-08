@@ -20,14 +20,14 @@ const problems: CarouselStep[] = [
     name: "Problem 02",
     title: "Wasted Time",
     description:
-      "Drivers in major cities lose upwards of 100 hours every year idling at poorly timed lights — that translates into over $87 billion in lost productivity across the U.S. alone. Multiply that by every commuter in every city, and traffic congestion quietly becomes one of the largest hidden taxes on modern life.",
+      "Drivers in the GTHA lose upwards of 100 hours every year idling at poorly timed lights — that translates into over $44 billion in annual losses across the region, projected to surpass $100 billion by 2044. Multiply that by every commuter in every Canadian city, and traffic congestion quietly becomes one of the largest hidden taxes on modern life.",
   },
   {
     id: "3",
     name: "Problem 03",
     title: "Emissions",
     description:
-      "Idling vehicles burn over 6 billion gallons of fuel each year in the U.S., pumping more than 30 million tons of CO₂ into the air for cars going nowhere. Poorly timed intersections aren't just an inconvenience — they're a major, fixable contributor to urban air pollution.",
+      "Every year, idling vehicles in Canada waste billions of litres of fuel and pump millions of tonnes of CO₂ into the air, for cars going nowhere. Across the GTHA, poorly timed intersections aren't just an inconvenience. They're a major, fixable contributor to urban air pollution.",
   },
 ]
 
