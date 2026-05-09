@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import ShaderBackground from '@/components/ui/shader-background'
 
 const EASE_SHARP = [0.22, 1, 0.36, 1] as const
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/REPLACE_ME'
 
 const INPUT_BASE =
   'w-full rounded-lg px-4 py-3 text-sm text-white placeholder-white/30 outline-none transition-all duration-200'
@@ -17,15 +18,37 @@ export default function Contact() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
 
   const focusStyle = (filled: boolean) => ({
     ...INPUT_STYLE,
     ...(filled ? { borderColor: 'rgba(0,255,136,0.5)' } : {}),
   })
 
-  const handleSend = () => {
-    // placeholder — wire up real submission later
-    console.log({ name, email, message })
+  const handleSend = async () => {
+    if (!name || !email || !message) return
+    setLoading(true)
+    setStatus('idle')
+    try {
+      const res = await fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ name, email, message }),
+      })
+      if (res.ok) {
+        setStatus('success')
+        setName('')
+        setEmail('')
+        setMessage('')
+      } else {
+        setStatus('error')
+      }
+    } catch {
+      setStatus('error')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -66,9 +89,32 @@ export default function Contact() {
             Ready to make your city move smarter?
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-base" style={{ color: 'rgba(235,235,235,0.7)' }}>
-            Whether you&apos;re a city official, a partner, or just curious — we&apos;d love to hear from you.
+            Whether you&apos;re a city official, a partner, or just curious, we&apos;d love to hear from you.
           </p>
         </div>
+
+        {/* Success message */}
+        {status === 'success' && (
+          <p
+            className="mb-6 rounded-lg px-4 py-3 text-center text-sm font-medium"
+            style={{ background: 'rgba(0,255,136,0.1)', color: '#00FF88', border: '1px solid rgba(0,255,136,0.3)' }}
+          >
+            Thanks, we&apos;ll be in touch soon.
+          </p>
+        )}
+
+        {/* Error message */}
+        {status === 'error' && (
+          <p
+            className="mb-6 rounded-lg px-4 py-3 text-center text-sm"
+            style={{ background: 'rgba(255,59,59,0.1)', color: '#FF3B3B', border: '1px solid rgba(255,59,59,0.3)' }}
+          >
+            Something went wrong. Please email us directly at{' '}
+            <a href="mailto:ben23412341@gmail.com" className="underline">
+              ben23412341@gmail.com
+            </a>
+          </p>
+        )}
 
         {/* Form fields */}
         <div className="flex flex-col gap-4">
@@ -132,20 +178,17 @@ export default function Contact() {
           <button
             type="button"
             onClick={handleSend}
-            className="mt-1 w-full rounded-full py-3 text-sm font-semibold transition-all duration-200 hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+            disabled={loading}
+            className="mt-1 w-full rounded-full py-3 text-sm font-semibold transition-all duration-200 hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
             style={{
               background: '#00FF88',
               color: '#0a0a0a',
               boxShadow: '0 8px 32px rgba(0,255,136,0.25)',
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = '#7FFF9F'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = '#00FF88'
-            }}
+            onMouseEnter={(e) => { if (!loading) e.currentTarget.style.background = '#7FFF9F' }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = '#00FF88' }}
           >
-            Send message
+            {loading ? 'Sending…' : 'Send message'}
           </button>
         </div>
 

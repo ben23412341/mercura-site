@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { motion } from "framer-motion"
 import { type CarouselStep } from "@/components/ui/animated-feature-carousel"
 
@@ -31,6 +32,19 @@ const problems: CarouselStep[] = [
   },
 ]
 
+const CARD_COLORS = [
+  { accent: '#00FF88', hover: '#7FFF9F' },
+  { accent: '#FFD700', hover: '#FFE55C' },
+  { accent: '#FF3B3B', hover: '#FF7070' },
+]
+
+function hex2rgba(hex: string, alpha: number): string {
+  const r = parseInt(hex.slice(1, 3), 16)
+  const g = parseInt(hex.slice(3, 5), 16)
+  const b = parseInt(hex.slice(5, 7), 16)
+  return `rgba(${r},${g},${b},${alpha})`
+}
+
 // --------------------------------------------------------------------------
 // Card
 // --------------------------------------------------------------------------
@@ -38,10 +52,16 @@ const problems: CarouselStep[] = [
 function ProblemCard({
   problem,
   index,
+  accent,
+  hoverAccent,
 }: {
   problem: CarouselStep
   index: number
+  accent: string
+  hoverAccent: string
 }) {
+  const [hovered, setHovered] = useState(false)
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 28 }}
@@ -52,37 +72,44 @@ function ProblemCard({
         delay: index * 0.12,
         ease: "easeOut",
       }}
-      className="group relative flex flex-col gap-5 overflow-hidden rounded-2xl border border-[#00FF88]/15 p-8 transition-colors duration-300 hover:border-[#00FF88]/35"
+      className="group relative flex flex-col gap-5 overflow-hidden rounded-2xl border p-8 transition-all duration-300"
       style={{
-        background:
-          "linear-gradient(135deg, rgba(0,255,136,0.06) 0%, #0f0f0f 55%)",
+        background: `linear-gradient(135deg, ${hex2rgba(accent, 0.06)} 0%, #0f0f0f 55%)`,
+        borderColor: hovered ? hex2rgba(accent, 0.35) : hex2rgba(accent, 0.15),
       }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
-      {/* Top-left green corner accent */}
+      {/* Top-left corner accent */}
       <div
         className="pointer-events-none absolute left-0 top-0 h-24 w-24 rounded-tl-2xl opacity-40"
         style={{
-          background:
-            "radial-gradient(circle at top left, rgba(0,255,136,0.25) 0%, transparent 70%)",
+          background: `radial-gradient(circle at top left, ${hex2rgba(accent, 0.25)} 0%, transparent 70%)`,
         }}
       />
 
       {/* Number indicator */}
-      <span className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-[#00FF88]/60">
+      <span
+        className="font-mono text-xs font-semibold uppercase tracking-[0.2em]"
+        style={{ color: hex2rgba(accent, 0.6) }}
+      >
         {problem.name}
       </span>
 
       {/* Large background number — decorative */}
       <div
         aria-hidden
-        className="pointer-events-none absolute bottom-4 right-6 select-none font-bold leading-none text-[#00FF88]/[0.05]"
-        style={{ fontSize: "7rem" }}
+        className="pointer-events-none absolute bottom-4 right-6 select-none font-bold leading-none"
+        style={{ fontSize: "7rem", color: hex2rgba(accent, 0.05) }}
       >
         {problem.id}
       </div>
 
       {/* Title */}
-      <h3 className="text-xl font-bold tracking-tight text-white transition-colors duration-300 group-hover:text-[#7FFF9F] md:text-2xl">
+      <h3
+        className="text-xl font-bold tracking-tight md:text-2xl transition-colors duration-300"
+        style={{ color: hovered ? hoverAccent : 'white' }}
+      >
         {problem.title}
       </h3>
 
@@ -92,7 +119,13 @@ function ProblemCard({
       </p>
 
       {/* Bottom rule that grows on hover */}
-      <div className="mt-auto h-px w-8 rounded-full bg-[#00FF88]/30 transition-all duration-500 group-hover:w-full group-hover:bg-[#00FF88]/20" />
+      <div
+        className="mt-auto h-px rounded-full transition-all duration-500"
+        style={{
+          width: hovered ? '100%' : '2rem',
+          background: hovered ? hex2rgba(accent, 0.2) : hex2rgba(accent, 0.3),
+        }}
+      />
     </motion.div>
   )
 }
@@ -130,7 +163,13 @@ export default function Problem() {
         {/* 3-card bento row */}
         <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
           {problems.map((problem, index) => (
-            <ProblemCard key={problem.id} problem={problem} index={index} />
+            <ProblemCard
+              key={problem.id}
+              problem={problem}
+              index={index}
+              accent={CARD_COLORS[index].accent}
+              hoverAccent={CARD_COLORS[index].hover}
+            />
           ))}
         </div>
 

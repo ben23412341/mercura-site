@@ -28,9 +28,26 @@ export default function RadialOrbitalTimeline({
   const [pulseEffect, setPulseEffect] = useState<Record<number, boolean>>({});
   const [centerOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [activeNodeId, setActiveNodeId] = useState<number | null>(null);
+  const [orbitRadius, setOrbitRadius] = useState<number>(200);
   const containerRef = useRef<HTMLDivElement>(null);
   const orbitRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<Record<number, HTMLDivElement | null>>({});
+
+  // Responsive radius — tracks container width via ResizeObserver
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const update = () => {
+      if (!containerRef.current) return;
+      const w = containerRef.current.offsetWidth;
+      setOrbitRadius(Math.min(200, Math.floor(w * 0.38)));
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(containerRef.current);
+    return () => ro.disconnect();
+  }, []);
+
+  const containerHeight = Math.round(orbitRadius * 3.5);
 
   const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === containerRef.current || e.target === orbitRef.current) {
@@ -87,10 +104,9 @@ export default function RadialOrbitalTimeline({
 
   const calculateNodePosition = (index: number, total: number) => {
     const angle = ((index / total) * 360 + rotationAngle) % 360;
-    const radius = 200;
     const radian = (angle * Math.PI) / 180;
-    const x = radius * Math.cos(radian) + centerOffset.x;
-    const y = radius * Math.sin(radian) + centerOffset.y;
+    const x = orbitRadius * Math.cos(radian) + centerOffset.x;
+    const y = orbitRadius * Math.sin(radian) + centerOffset.y;
     const zIndex = Math.round(100 + 50 * Math.cos(radian));
     const opacity = Math.max(0.4, Math.min(1, 0.4 + 0.6 * ((1 + Math.sin(radian)) / 2)));
     return { x, y, angle, zIndex, opacity };
@@ -119,9 +135,12 @@ export default function RadialOrbitalTimeline({
     }
   };
 
+  const ringSize = orbitRadius * 2;
+
   return (
     <div
-      className="w-full h-[700px] flex flex-col items-center justify-center bg-[#0a0a0a] overflow-hidden"
+      className="w-full flex flex-col items-center justify-center bg-[#0a0a0a] overflow-hidden"
+      style={{ height: `${containerHeight}px` }}
       ref={containerRef}
       onClick={handleContainerClick}
     >
@@ -144,8 +163,11 @@ export default function RadialOrbitalTimeline({
             <div className="w-8 h-8 rounded-full bg-[#00FF88]/80 backdrop-blur-md" />
           </div>
 
-          {/* Orbit ring */}
-          <div className="absolute w-96 h-96 rounded-full border border-[#00FF88]/10" />
+          {/* Orbit ring — sized to match actual radius */}
+          <div
+            className="absolute rounded-full border border-[#00FF88]/10"
+            style={{ width: ringSize, height: ringSize }}
+          />
 
           {timelineData.map((item, index) => {
             const position = calculateNodePosition(index, timelineData.length);
@@ -210,13 +232,17 @@ export default function RadialOrbitalTimeline({
                     transition-all duration-300
                     ${isExpanded ? "text-[#00FF88] scale-125" : "text-white/70"}
                   `}
+                  style={{ fontSize: orbitRadius < 150 ? '0.6rem' : undefined }}
                 >
                   {item.title}
                 </div>
 
                 {/* Expanded card */}
                 {isExpanded && (
-                  <Card className="absolute top-20 left-1/2 -translate-x-1/2 w-64 bg-[#0a0a0a]/95 backdrop-blur-lg border-[#00FF88]/20 shadow-xl shadow-[#00FF88]/10 overflow-visible">
+                  <Card
+                    className="absolute top-20 left-1/2 -translate-x-1/2 bg-[#0a0a0a]/95 backdrop-blur-lg border-[#00FF88]/20 shadow-xl shadow-[#00FF88]/10 overflow-visible"
+                    style={{ width: Math.min(256, orbitRadius * 1.4) }}
+                  >
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-px h-3 bg-[#00FF88]/50" />
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-center">

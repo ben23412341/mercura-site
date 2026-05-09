@@ -110,29 +110,35 @@ export function BackgroundPaths({
                         </motion.p>
                     )}
 
-                    <div
-                        className="inline-block group relative bg-gradient-to-b from-[#ebebeb]/20 to-transparent
-                        p-px rounded-2xl backdrop-blur-lg
-                        overflow-hidden shadow-lg hover:shadow-xl hover:shadow-[#ebebeb]/10 transition-shadow duration-300"
-                    >
+                    <div className="flex flex-wrap items-center justify-center gap-4">
+                        {/* Primary CTA */}
+                        <button
+                            type="button"
+                            onClick={() => document.getElementById('impact')?.scrollIntoView({ behavior: 'smooth' })}
+                            className="rounded-full px-6 py-2.5 text-sm font-semibold transition-all duration-200 hover:scale-105 focus:outline-none"
+                            style={{ background: '#00FF88', color: '#0a0a0a' }}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = '#7FFF9F' }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = '#00FF88' }}
+                        >
+                            See the results →
+                        </button>
+
+                        {/* Secondary CTA */}
                         <button
                             type="button"
                             onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-                            className="rounded-[1.15rem] px-6 py-2.5 text-sm font-semibold backdrop-blur-md
-                            bg-[#ebebeb] hover:bg-white
-                            text-[#0a0a0a] transition-all duration-300
-                            group-hover:-translate-y-0.5 border border-[#ebebeb]/30
-                            hover:shadow-lg hover:shadow-[#ebebeb]/30"
+                            className="rounded-full px-6 py-2.5 text-sm font-semibold border transition-all duration-200 hover:scale-105 focus:outline-none"
+                            style={{ background: 'transparent', color: '#00FF88', borderColor: '#00FF88' }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = '#00FF88'
+                                e.currentTarget.style.color = '#0a0a0a'
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = 'transparent'
+                                e.currentTarget.style.color = '#00FF88'
+                            }}
                         >
-                            <span className="opacity-90 group-hover:opacity-100 transition-opacity">
-                                Get in touch
-                            </span>
-                            <span
-                                className="ml-3 opacity-70 group-hover:opacity-100 group-hover:translate-x-1.5
-                                transition-all duration-300"
-                            >
-                                →
-                            </span>
+                            Get in touch
                         </button>
                     </div>
                 </motion.div>
